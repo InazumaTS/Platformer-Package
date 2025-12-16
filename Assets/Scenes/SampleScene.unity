@@ -232,6 +232,14 @@ PrefabInstance:
       value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 5977507436658717435, guid: 06ff46e62c9eb124897c2c4b47984f08, type: 3}
+      propertyPath: slopeRayCastDistance
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5977507436658717435, guid: 06ff46e62c9eb124897c2c4b47984f08, type: 3}
+      propertyPath: groundRayCastDistance
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5977507436658717435, guid: 06ff46e62c9eb124897c2c4b47984f08, type: 3}
       propertyPath: bonusAirTurnDeceleration
       value: 20
       objectReference: {fileID: 0}
@@ -870,13 +878,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1760870666}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0.050070032, w: 0.99874574}
-  m_LocalPosition: {x: 11.3, y: -2.96, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0.38268343, w: 0.92387956}
+  m_LocalPosition: {x: 6.77, y: 1.79, z: 0}
   m_LocalScale: {x: 21.174099, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 5.74}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 45}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

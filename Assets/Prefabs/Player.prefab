@@ -119,7 +119,8 @@ MonoBehaviour:
   acceleration: 15
   deceleration: 10
   turnDeceleration: 20
-  groundRayCastDistance: 0.1
+  groundRayCastDistance: 0.15
+  slopeRayCastDistance: 0.5
   jumpForce: 10
   JumpCutMultiplier: 1
   fallGravityForce: 20
@@ -140,6 +141,9 @@ MonoBehaviour:
   bonusAirAcceleration: 30
   bonusAirDeceleration: 5
   bonusAirTurnDeceleration: 20
+  maxSlopeAngle: 45
+  UphillCoeffecient: 0.4
+  DownhillCoeffecient: 1.4
 --- !u!114 &8324061798925284819
 MonoBehaviour:
   m_ObjectHideFlags: 0

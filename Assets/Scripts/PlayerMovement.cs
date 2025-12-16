@@ -130,8 +130,7 @@ public class PlayerMovement : MonoBehaviour
         slopeNormal = hit.normal;
         slopeAngle = Vector2.Angle(slopeNormal,Vector2.up);
         isUphill = Mathf.Sign(oldMovementVector.x) != Mathf.Sign(hit.normal.x);
-        if(slopeAngle>maxSlopeAngle)
-            currentState = state.falling;
+
         if (hit.collider != null)
         {
             lastGroundedTime = Time.time;
@@ -183,19 +182,24 @@ public class PlayerMovement : MonoBehaviour
 
     private void RunState()
     {
+
         Vector2 adjustedSpeed;
         slopeDirection = Vector2.Perpendicular(slopeNormal).normalized;
         if (Mathf.Sign(oldMovementVector.x) != Mathf.Sign(slopeDirection.x))
             slopeDirection = -slopeDirection;
         currentSpeed = HandleMovement(currentSpeed, acceleration, deceleration, turnDeceleration, topSpeed);
+        if (slopeAngle > maxSlopeAngle)
+            currentSpeed = 0f;
         if (slopeAngle == 0)
-            adjustedSpeed = currentSpeed * slopeDirection;
+            adjustedSpeed = currentSpeed * new Vector2(oldMovementVector.x,0);
         else if (isUphill)
+        {
             adjustedSpeed = currentSpeed * slopeDirection * (UphillCoeffecient);
+        }
         else
+        {
             adjustedSpeed = currentSpeed * slopeDirection * (DownhillCoeffecient);
-
-            Debug.Log(currentSpeed + "," + adjustedSpeed);
+        }
 
         rb.linearVelocity = adjustedSpeed;
     }
@@ -249,18 +253,13 @@ public class PlayerMovement : MonoBehaviour
 
         rb.linearVelocity = new Vector2(oldMovementVector.x * airSpeed, fallSpeed);
         currentSpeed = airSpeed;
-
-
-        RaycastHit2D hit = isGrounded();
-        if (hit.collider != null)
+        if (isGrounded().collider != null)
         {
-            if(playerInput.GetMovementVector() != Vector2.zero)
+            if (playerInput.GetMovementVector() != Vector2.zero)
                 currentState = state.running;
             else
                 currentState = state.idle;
-            
-        }   
-
+        }
     }
 
     private float HandleMovement(float currentSpeed,float acceleration, float deceleration,float turnceleration, float topspeed)
@@ -300,11 +299,26 @@ public class PlayerMovement : MonoBehaviour
         int playerLayer = gameObject.layer;
         int layerMask = ~(1 << playerLayer);
         RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, playerCollider.bounds.extents.y + groundRayCastDistance, layerMask);
+        Debug.DrawRay(transform.position, Vector2.down * (playerCollider.bounds.extents.y + groundRayCastDistance), Color.red, 1f);
         return hit;
     }
 
-    private Vector2 GetSlopeAdjustedVelocity()
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        return Vector2.zero;
+        
+        if (isGrounded().collider != null)
+        {
+            if (playerInput.GetMovementVector() != Vector2.zero)
+                currentState = state.running;
+            else
+                currentState = state.idle;
+        }
+    }
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if (currentState != state.jumping)
+        {
+            currentState = state.falling;
+        }
     }
 }
