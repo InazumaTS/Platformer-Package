@@ -97,7 +97,7 @@ public class PlayerMovement : MonoBehaviour
     state currentState;
     void Start()
     {
-
+        lastJumpPressedTime = -Mathf.Infinity;
         playerInput = GetComponent<PlayerInputs>();
         playerCollider = GetComponent<Collider2D>();
         rb = GetComponent<Rigidbody2D>();
@@ -115,6 +115,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void PlayerInput_OnJump(object sender, System.EventArgs e)
     {
+        currentJumpForce = jumpForce;
         lastJumpPressedTime = Time.time;
         Debug.DrawRay(transform.position, Vector2.down * (playerCollider.bounds.extents.y + groundRayCastDistance), Color.red, 1f);
         if (Time.time <= lastGroundedTime + coyoteTimeDuration)
@@ -139,11 +140,7 @@ public class PlayerMovement : MonoBehaviour
         {
             currentState = state.falling;
         }
-        if (lastJumpPressedTime + jumpBufferDuration >= Time.time && hit.collider!=null)
-        {
-
-            currentState = state.jumping;
-        }
+        
 
 
     }
@@ -240,9 +237,8 @@ public class PlayerMovement : MonoBehaviour
     }
 
     private void FallState()
-    {
+    { 
         isButtonStillHeld = true;
-        currentJumpForce = jumpForce;
         float fallSpeed = Mathf.MoveTowards(rb.linearVelocity.y, maxFallSpeed, fallGravityForce * fallGravityMultiplier * Time.fixedDeltaTime);
         airSpeed = currentSpeed;
         if(!hasBonusAirSpeed)
@@ -253,13 +249,6 @@ public class PlayerMovement : MonoBehaviour
 
         rb.linearVelocity = new Vector2(oldMovementVector.x * airSpeed, fallSpeed);
         currentSpeed = airSpeed;
-        if (isGrounded().collider != null)
-        {
-            if (playerInput.GetMovementVector() != Vector2.zero)
-                currentState = state.running;
-            else
-                currentState = state.idle;
-        }
     }
 
     private float HandleMovement(float currentSpeed,float acceleration, float deceleration,float turnceleration, float topspeed)
@@ -305,20 +294,29 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        
-        if (isGrounded().collider != null)
+        RaycastHit2D hit = isGrounded();
+        if (hit.collider != null)
         {
             if (playerInput.GetMovementVector() != Vector2.zero)
                 currentState = state.running;
             else
                 currentState = state.idle;
         }
+        if (lastJumpPressedTime + jumpBufferDuration >= Time.time && hit.collider != null)
+        {
+            currentState = state.jumping;
+        }
     }
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if (currentState != state.jumping)
-        {
-            currentState = state.falling;
+        int playerLayer = gameObject.layer;
+        int layerMask = ~(1 << playerLayer);  
+        if (isGrounded().collider != null)
+        { 
+            if (currentState != state.jumping && !playerCollider.IsTouchingLayers(layerMask))
+            {
+                currentState = state.falling;
+            }
         }
     }
 }
